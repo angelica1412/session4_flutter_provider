@@ -23,15 +23,12 @@ class CounterApp extends StatefulWidget {
 class _CounterAppState extends State<CounterApp> {
   final GlobalState globalState = GlobalState();
   List<Color> cardColors = [];
-  Map<int, ValueNotifier<int>> counters =
-      {}; // Ganti ke Map untuk menyimpan counter
 
   void removeCounter(int index) {
     if (index >= 0 && index < globalState.counters.length) {
       setState(() {
         globalState.removeCounter(index);
         cardColors.removeAt(index);
-        counters.remove(index); // Hapus juga counter yang sesuai
       });
     }
   }
@@ -47,16 +44,11 @@ class _CounterAppState extends State<CounterApp> {
       body: ReorderableListView(
         children: globalState.counters.asMap().entries.map((entry) {
           final index = entry.key + 1;
+          final counter = entry.value;
 
           if (cardColors.length <= index) {
             cardColors.add(getRandomColor());
           }
-
-          // Dapatkan counter dari map, atau buat yang baru jika tidak ada
-          final counter = counters.putIfAbsent(
-            index,
-            () => ValueNotifier<int>(0),
-          );
 
           return ReorderableDragStartListener(
             index: index,
@@ -89,10 +81,8 @@ class _CounterAppState extends State<CounterApp> {
         backgroundColor: Color.fromARGB(255, 203, 104, 104),
         onPressed: () {
           setState(() {
-            globalState.addCounter(globalState.counters.length + 1);
+            globalState.addCounter(0);
             cardColors.add(getRandomColor());
-            // Tambahkan counter baru dengan nilai awal 0
-            counters[globalState.counters.length] = ValueNotifier<int>(0);
           });
         },
         child: Icon(Icons.add),
@@ -155,7 +145,7 @@ class _CardWidgetState extends State<CardWidget> {
                   valueListenable: widget.counter,
                   builder: (context, value, child) {
                     return Text(
-                      ' $value',
+                      '$value',
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -171,7 +161,10 @@ class _CardWidgetState extends State<CardWidget> {
                   icon: Icon(Icons.remove),
                   onPressed: () {
                     setState(() {
-                      widget.globalState.decrementCounter(widget.index - 1);
+                      if (widget.counter.value > 0) {
+                        widget.counter
+                            .value--; // Kurangi nilai counter jika nilainya lebih dari 0
+                      }
                     });
                   },
                 ),
@@ -180,7 +173,7 @@ class _CardWidgetState extends State<CardWidget> {
                   icon: Icon(Icons.add),
                   onPressed: () {
                     setState(() {
-                      widget.globalState.incrementCounter(widget.index - 1);
+                      widget.counter.value++; // Tambahkan nilai counter
                     });
                   },
                 ),
