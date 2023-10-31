@@ -132,7 +132,7 @@ class _CardWidgetState extends State<CardWidget> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Row(
+            Column(
               children: <Widget>[
                 Text(
                   'Counter ${widget.index}:',
@@ -141,14 +141,14 @@ class _CardWidgetState extends State<CardWidget> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+                SizedBox(height: 8),
                 ValueListenableBuilder<int>(
                   valueListenable: widget.counter,
                   builder: (context, value, child) {
                     return Text(
-                      '$value',
+                      'Counter value: $value',
                       style: TextStyle(
                         fontSize: 14,
-                        fontWeight: FontWeight.bold,
                       ),
                     );
                   },
